@@ -1,0 +1,20 @@
+{
+  "name": "V2 단어 사전 & 구문 번역 & 저장",
+  "description": "몰랐던 단어 및 구문을 번역해 주는 기능에 해당 텍스트 저장까지 해주는 크롬 확장자",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["storage", "activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icons/icon_1_48.svg"
+    }
+  },
+  "icons": {
+    "48": "icons/icon_1_48.svg"
+  },
+  "options_page": "options.html"
+}
