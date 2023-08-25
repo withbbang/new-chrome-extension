@@ -10,7 +10,8 @@
     }
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "service-worker.js",
+    "type": "module"
   },
   "permissions": ["storage", "activeTab", "scripting"],
   "action": {
@@ -27,8 +28,8 @@
     "_execute_action": {},
     "toggle_command": {
       "suggested_key": {
-        "default": "Ctrl + Q",
-        "mac": "Ctrl + Q"
+        "default": "Ctrl + E",
+        "mac": "Ctrl + E"
       },
       "description": "Toggle Command"
     }
