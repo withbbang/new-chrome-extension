@@ -3,6 +3,12 @@
   "description": "몰랐던 단어 및 구문을 번역해 주는 기능에 해당 텍스트 저장까지 해주는 크롬 확장자",
   "version": "1.0",
   "manifest_version": 3,
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["scripts/contentScript.js"]
+    }
+  ],
   "background": {
     "service_worker": "background.js"
   },
@@ -10,11 +16,21 @@
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "48": "icons/icon_1_48.svg"
+      "48": "icons/icon_1_48.png"
     }
   },
   "icons": {
-    "48": "icons/icon_1_48.svg"
+    "48": "icons/icon_1_48.png"
   },
-  "options_page": "options.html"
+  "options_page": "options.html",
+  "commands": {
+    "_execute_action": {},
+    "toggle_command": {
+      "suggested_key": {
+        "default": "Ctrl + Q",
+        "mac": "Ctrl + Q"
+      },
+      "description": "Toggle Command"
+    }
+  }
 }
