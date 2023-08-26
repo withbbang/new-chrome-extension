@@ -6,7 +6,8 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["scripts/contentScript.js"]
+      "js": ["scripts/contentScript.js"],
+      "css": ["contentScript.css"]
     }
   ],
   "background": {
@@ -17,11 +18,11 @@
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "48": "icons/icon_1_48.png"
+      "96": "icons/icon_1_96.png"
     }
   },
   "icons": {
-    "48": "icons/icon_1_48.png"
+    "96": "icons/icon_1_96.png"
   },
   "options_page": "options.html",
   "commands": {

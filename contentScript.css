@@ -1,0 +1,28 @@
+.dict ul {
+  padding: 0 !important;
+  padding-top: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  list-style-type: none;
+  counter-reset: steps;
+  margin: 3px !important;
+}
+.dict ul li {
+  counter-increment: steps;
+  padding: 0 !important;
+  list-style: none !important;
+  margin-bottom: 3px !important;
+  color: black;
+}
+.dict ul li::before {
+  content: counter(steps);
+  margin-right: 0.5rem;
+  background: #50bcdf;
+  color: white;
+  width: 1.2em;
+  height: 1.2em;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  line-height: 1.2em;
+}
