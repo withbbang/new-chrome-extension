@@ -1,5 +1,7 @@
 import { PAPAGO_CLIENT_ID, PAPAGO_CLIENT_SECRET } from "./env.js";
 
+const OFFSCREEN_DOCUMENT_PATH = "offscreen.html";
+
 chrome.commands.onCommand.addListener((command) => {
   chrome.storage.local.get(["isDict"], (result) => {
     if (result.isDict === false) chrome.storage.local.set({ isDict: true });
@@ -7,7 +9,7 @@ chrome.commands.onCommand.addListener((command) => {
   });
 });
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   const { msg, isDict } = request;
   const dict = {
     한국어사전: 1,
@@ -44,58 +46,40 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         });
       }
     });
-  else
-    fetch(`https://dic.daum.net/search.do?q=${msg}`).then((res) => {
-      if (res.status === 200) {
-        res.text().then((text) => {
-          const parser = new DOMParser();
-          const searchResults = [
-            ...parser
-              .parseFromString(text, "text/html")
-              .querySelectorAll(".tit_word"),
-          ] // 돔 파싱 후, 언어 사전 타이틀 읽어오기
-            .filter(
-              (titleWordTag) =>
-                titleWordTag.innerText === "한국어사전" ||
-                titleWordTag.innerText === "영어사전" ||
-                titleWordTag.innerText === "영영사전"
-            ) // 특정 언어 사전만 걸러내기
-            .sort((a, b) => {
-              if (dict[a.innerText] < dict[b.innerText]) return -1;
-              else return 1;
-            }) // 순서 설정 -> 한국어, 영어, 영영
-            .map((tag) => tag.parentElement)
-            .map((tag) => tag.nextElementSibling); // 뜻 담고있는 부모 태그 리스트 접근
+  else {
+    if (!(await handleHasDocument())) {
+      await chrome.offscreen.createDocument({
+        url: OFFSCREEN_DOCUMENT_PATH,
+        reasons: ["DOM_PARSER"],
+        justification: "Parse DOM",
+      });
+    }
 
-          if (
-            searchResults &&
-            Array.isArray(searchResults) &&
-            searchResults.length > 0
-          ) {
-            let searchLi = [];
-
-            searchResults.forEach((result) => {
-              searchLi = [...searchLi, ...result.getElementsByTagName("li")];
-            });
-
-            const results = [...searchLi].map((li) =>
-              [...li.getElementsByClassName("txt_search")]
-                .map((txt) => txt.innerHTML.replace(/(<([^>]+)>)/gi, ""))
-                .join("")
-            ); // 뜻만 추출하여 리스트업
-
-            sendResponse({
-              status: res.status,
-              body: results,
-            });
-          }
-        });
-      } else {
-        sendResponse({
-          status: res.status,
-        });
-      }
-    });
+    chrome.runtime.sendMessage(msg);
+  }
 
   return true;
 });
+
+chrome.runtime.onMessage.addListener(async (message) => {
+  console.log(message);
+  await handleCloseOffscreenDocument();
+});
+
+async function handleCloseOffscreenDocument() {
+  if (!(await handleHasDocument())) {
+    return;
+  }
+  return await chrome.offscreen.closeDocument();
+}
+
+async function handleHasDocument() {
+  // Check all windows controlled by the service worker if one of them is the offscreen document
+  const matchedClients = await clients.matchAll();
+  for (const client of matchedClients) {
+    if (client.url.endsWith(OFFSCREEN_DOCUMENT_PATH)) {
+      return true;
+    }
+  }
+  return false;
+}

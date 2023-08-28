@@ -14,7 +14,7 @@
     "service_worker": "service-worker.js",
     "type": "module"
   },
-  "permissions": ["storage", "activeTab", "scripting"],
+  "permissions": ["storage", "activeTab", "scripting", "offscreen"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
