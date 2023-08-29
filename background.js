@@ -10,12 +10,7 @@ chrome.commands.onCommand.addListener((command) => {
 });
 
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
-  const { msg, isDict } = request;
-  const dict = {
-    한국어사전: 1,
-    영어사전: 2,
-    영영사전: 3,
-  };
+  const { msg, isDict, results, type, status } = request;
 
   if (isDict === false)
     fetch("https://openapi.naver.com/v1/papago/n2mt", {
@@ -50,31 +45,36 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     if (!(await handleHasDocument())) {
       await chrome.offscreen.createDocument({
         url: OFFSCREEN_DOCUMENT_PATH,
-        reasons: ["DOM_PARSER"],
+        reasons: [chrome.offscreen.Reason.DOM_PARSER],
         justification: "Parse DOM",
       });
+
+      chrome.runtime.sendMessage(msg);
     }
 
-    chrome.runtime.sendMessage(msg);
+    if (type === "offscreen") {
+      console.log(results);
+      sendResponse({
+        status,
+        body: results,
+      });
+
+      await handleCloseOffscreenDocument();
+    }
   }
 
   return true;
-});
-
-chrome.runtime.onMessage.addListener(async (message) => {
-  console.log(message);
-  await handleCloseOffscreenDocument();
 });
 
 async function handleCloseOffscreenDocument() {
   if (!(await handleHasDocument())) {
     return;
   }
-  return await chrome.offscreen.closeDocument();
+
+  await chrome.offscreen.closeDocument();
 }
 
 async function handleHasDocument() {
-  // Check all windows controlled by the service worker if one of them is the offscreen document
   const matchedClients = await clients.matchAll();
   for (const client of matchedClients) {
     if (client.url.endsWith(OFFSCREEN_DOCUMENT_PATH)) {

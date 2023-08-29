@@ -1,10 +1,18 @@
+const type = "offscreen";
+
 chrome.runtime.onMessage.addListener(handleMessages);
 
-// This function performs basic filtering and error checking on messages before
-// dispatching the message to a more specific message handler.
 async function handleMessages(msg) {
+  const dict = {
+    한국어사전: 1,
+    영어사전: 2,
+    영영사전: 3,
+  };
+
   fetch(`https://dic.daum.net/search.do?q=${msg}`).then((res) => {
-    if (res.status === 200) {
+    const { status } = res;
+
+    if (status === 200) {
       res.text().then((text) => {
         const parser = new DOMParser();
         const searchResults = [
@@ -42,20 +50,18 @@ async function handleMessages(msg) {
               .join("")
           ); // 뜻만 추출하여 리스트업
 
-          chrome.runtime.sendMessage(
-            JSON.stringify({
-              status: res.status,
-              body: results,
-            })
-          );
+          chrome.runtime.sendMessage({
+            results,
+            type,
+            status,
+          });
         }
       });
     } else {
-      chrome.runtime.sendMessage(
-        JSON.stringify({
-          status: res.status,
-        })
-      );
+      chrome.runtime.sendMessage({
+        type,
+        status,
+      });
     }
   });
 }
