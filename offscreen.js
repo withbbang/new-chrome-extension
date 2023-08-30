@@ -2,7 +2,7 @@ const type = "offscreen";
 
 chrome.runtime.onMessage.addListener(handleMessages);
 
-async function handleMessages(msg) {
+function handleMessages(msg) {
   const dict = {
     한국어사전: 1,
     영어사전: 2,

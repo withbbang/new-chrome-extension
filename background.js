@@ -59,7 +59,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           body: results,
         });
 
-        await handleCloseOffscreenDocument();
+        chrome.offscreen.closeDocument();
       }
     });
   }
