@@ -9,7 +9,7 @@ chrome.commands.onCommand.addListener((command) => {
   });
 });
 
-chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   const { msg, isDict, results, type, status } = request;
 
   if (isDict === false)
@@ -42,25 +42,26 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
       }
     });
   else {
-    if (!(await handleHasDocument())) {
-      await chrome.offscreen.createDocument({
-        url: OFFSCREEN_DOCUMENT_PATH,
-        reasons: [chrome.offscreen.Reason.DOM_PARSER],
-        justification: "Parse DOM",
-      });
+    handleHasDocument().then(async (hasDocument) => {
+      console.log("hasDocument: ", hasDocument);
+      if (!hasDocument) {
+        await chrome.offscreen.createDocument({
+          url: OFFSCREEN_DOCUMENT_PATH,
+          reasons: [chrome.offscreen.Reason.DOM_PARSER],
+          justification: "Parse DOM",
+        });
 
-      chrome.runtime.sendMessage(msg);
-    }
+        chrome.runtime.sendMessage(msg);
+      } else {
+        console.log(results);
+        sendResponse({
+          status,
+          body: results,
+        });
 
-    if (type === "offscreen") {
-      console.log(results);
-      sendResponse({
-        status,
-        body: results,
-      });
-
-      await handleCloseOffscreenDocument();
-    }
+        await handleCloseOffscreenDocument();
+      }
+    });
   }
 
   return true;
