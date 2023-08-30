@@ -1,2 +1,2 @@
-export const PAPAGO_CLIENT_ID = "EVyJseCsjiv_X9iEIkxq";
-export const PAPAGO_CLIENT_SECRET = "NaAugJ4Pvh";
+export const PAPAGO_CLIENT_ID = "PAPAGO_CLIENT_ID";
+export const PAPAGO_CLIENT_SECRET = "PAPAGO_CLIENT_SECRET";
