@@ -1,5 +1,3 @@
-const type = "offscreen";
-
 chrome.runtime.onMessage.addListener(handleMessages);
 
 function handleMessages(msg) {
@@ -52,14 +50,13 @@ function handleMessages(msg) {
 
           chrome.runtime.sendMessage({
             results,
-            type,
             status,
           });
         }
       });
     } else {
       chrome.runtime.sendMessage({
-        type,
+        results: [],
         status,
       });
     }
