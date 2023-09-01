@@ -10,7 +10,7 @@ chrome.commands.onCommand.addListener((command) => {
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  const { msg, isDict, results, type, status } = request;
+  const { msg, isDict, results, status } = request;
 
   if (isDict === false)
     fetch("https://openapi.naver.com/v1/papago/n2mt", {
@@ -38,6 +38,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       } else {
         sendResponse({
           status: res.status,
+          body: "",
         });
       }
     });
@@ -53,13 +54,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         chrome.runtime.sendMessage(msg);
       } else {
-        console.log(results);
-        sendResponse({
-          status,
-          body: results,
-        });
+        await chrome.offscreen.closeDocument();
 
-        chrome.offscreen.closeDocument();
+        chrome.tabs.query({ active: true, currentWindow: true }, (pages) => {
+          chrome.tabs.sendMessage(pages[0].id, {
+            status,
+            body: results,
+          });
+        });
       }
     });
   }
