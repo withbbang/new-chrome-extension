@@ -87,8 +87,8 @@ function handleDisplayContents(status, body, target) {
 function handleFadeInOut(command, sourceLang, targetLang, isDict) {
   const animationTime = 1000;
   const span = document.createElement("span");
-  span.classList.add("alert");
-  span.setAttribute("id", "alert");
+  span.classList.add("alert-chrome-extension");
+  span.setAttribute("id", "alert-chrome-extension");
 
   if (command === "toggle_command") {
     if (isDict) span.innerText = "사전";

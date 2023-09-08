@@ -34,8 +34,8 @@
   line-height: 1.2em;
 }
 
-.alert {
-  position: absolute;
+.alert-chrome-extension {
+  position: fixed;
   left: 0;
   top: 0;
   font-size: 50px;

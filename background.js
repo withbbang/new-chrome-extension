@@ -16,8 +16,8 @@ chrome.commands.onCommand.addListener(async (command) => {
 
   if (command === "toggle_command") {
     let result = await chrome.storage.local.get(["isDict"]);
-    chrome.storage.local.set({ isDict });
     isDict = !result.isDict;
+    chrome.storage.local.set({ isDict });
   } else {
     handleChangeLang();
   }
@@ -46,8 +46,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         "X-Naver-Client-Secret": PAPAGO_CLIENT_SECRET,
       },
       body: JSON.stringify({
-        source,
-        target,
+        source: sourceLang,
+        target: targetLang,
         text: msg,
       }),
     }).then((res) => {
