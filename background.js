@@ -1,11 +1,36 @@
 import { PAPAGO_CLIENT_ID, PAPAGO_CLIENT_SECRET } from "./env.js";
 
+let sourceLang = "en";
+let targetLang = "ko";
+
 const OFFSCREEN_DOCUMENT_PATH = "offscreen.html";
 
-chrome.commands.onCommand.addListener((command) => {
-  chrome.storage.local.get(["isDict"], (result) => {
-    if (result.isDict === false) chrome.storage.local.set({ isDict: true });
-    else chrome.storage.local.set({ isDict: false });
+function handleChangeLang() {
+  const tmp = targetLang;
+  targetLang = sourceLang;
+  sourceLang = tmp;
+}
+
+chrome.commands.onCommand.addListener(async (command) => {
+  let isDict = false;
+
+  if (command === "toggle_command") {
+    let result = await chrome.storage.local.get(["isDict"]);
+    chrome.storage.local.set({ isDict });
+    isDict = !result.isDict;
+  } else {
+    handleChangeLang();
+  }
+
+  chrome.tabs.query({ active: true, currentWindow: true }, (pages) => {
+    chrome.tabs.sendMessage(pages[0].id, {
+      status: 200,
+      body: "",
+      isDict,
+      command,
+      sourceLang,
+      targetLang,
+    });
   });
 });
 
@@ -21,8 +46,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         "X-Naver-Client-Secret": PAPAGO_CLIENT_SECRET,
       },
       body: JSON.stringify({
-        source: "en",
-        target: "ko",
+        source,
+        target,
         text: msg,
       }),
     }).then((res) => {
@@ -44,7 +69,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
   else {
     handleHasDocument().then(async (hasDocument) => {
-      console.log("hasDocument: ", hasDocument);
       if (!hasDocument) {
         await chrome.offscreen.createDocument({
           url: OFFSCREEN_DOCUMENT_PATH,

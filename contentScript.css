@@ -1,3 +1,10 @@
+.dict {
+  z-index: 9999999999999999999;
+  position: absolute;
+  background-color: #eee;
+  padding: 5px;
+}
+
 .dict ul {
   padding: 0 !important;
   padding-top: 10px;
@@ -25,4 +32,24 @@
   display: inline-grid;
   place-items: center;
   line-height: 1.2em;
+}
+
+.alert {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 50px;
+  color: #2a64f0;
+  z-index: 999999999;
+  font-weight: bold;
+}
+
+.fade-in {
+  opacity: 1;
+  transition: 1s;
+}
+
+.fade-out {
+  opacity: 0;
+  transition: 1s;
 }
