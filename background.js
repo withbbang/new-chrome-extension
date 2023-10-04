@@ -93,14 +93,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   return true;
 });
 
-async function handleCloseOffscreenDocument() {
-  if (!(await handleHasDocument())) {
-    return;
-  }
-
-  await chrome.offscreen.closeDocument();
-}
-
 async function handleHasDocument() {
   const matchedClients = await clients.matchAll();
   for (const client of matchedClients) {
